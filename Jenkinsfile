@@ -3,25 +3,19 @@ pipeline {
         label 'master'
     }
     stages {
-        stage('PRINT') {
+        stage('Greeting') {
             steps {
-                sh 'echo $JOB_NAME'
+                sh 'echo "Notification Time!"'
             }
         }
-        stage('WRITE') {
-            steps {
-                sh 'echo $BUILD_NUMBER >> build_number'
-            }
-        }
-        stage('READ') {
-            steps {
-                sh 'cat build_number'
-            }
-        }
+
     }
     post {
-        always {
-            archiveArtifacts artifacts: 'build_number', fingerprint: true
+        success {
+          emailext(
+             subject: "${env.JOB_NAME} [${env.BUILD_NUMBER}] Ran!",
+             body: """
+'${env.JOB_NAME} [${env.BUILD_NUMBER}]' Ran!": Check console output at ${env.JOB_NAME} [${env.BUILD_NUMBER}]/a> """, to: "your@email.com" )
         }
     }
-}
+ }
